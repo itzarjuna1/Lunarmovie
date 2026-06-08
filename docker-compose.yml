@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: lunar_movie_bot
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./bot/logs:/app/bot/logs
+      - ./sessions:/app/sessions
+    networks:
+      - lunar_net
+
+  mongo:
+    image: mongo:7.0
+    container_name: lunar_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: lunar_movie_bot
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lunar_net
+
+volumes:
+  mongo_data:
+
+networks:
+  lunar_net:
+    driver: bridge
