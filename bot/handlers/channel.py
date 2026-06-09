@@ -7,7 +7,7 @@ from bot.database.models import Movie
 from bot.modules.file_parser import parse_filename
 from bot.utils.decorators import log_errors
 from bot.utils.logger import log
-
+#storage channel managed here all fixes pulled
 
 def _is_storage_channel(_, __, message: Message) -> bool:
     return message.chat.id in config.STORAGE_CHANNELS
