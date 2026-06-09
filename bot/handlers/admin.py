@@ -20,13 +20,13 @@ from bot.utils.logger import log
 
 @Client.on_message(filters.command("admin") & admin_filter)
 @log_errors
-async def admin_menu(client: Client, message: Message) -> None:
+async def admin_menu(app: Client, message: Message) -> None:
     await message.reply("🛠 **Admin Panel**", reply_markup=admin_panel())
 
 
 @Client.on_message(filters.command("stats") & admin_filter)
 @log_errors
-async def stats_handler(client: Client, message: Message) -> None:
+async def stats_handler(app: Client, message: Message) -> None:
     total_users = await UserRepository.count()
     total_movies = await MovieRepository.count_all()
     pending_reqs = await RequestRepository.count_pending()
@@ -40,7 +40,7 @@ async def stats_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("broadcast") & admin_filter)
 @log_errors
-async def broadcast_handler(client: Client, message: Message) -> None:
+async def broadcast_handler(app: Client, message: Message) -> None:
     if not message.reply_to_message:
         await message.reply("Reply to a message to broadcast it.")
         return
@@ -63,7 +63,7 @@ async def broadcast_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("ban") & admin_filter)
 @log_errors
-async def ban_handler(client: Client, message: Message) -> None:
+async def ban_handler(app: Client, message: Message) -> None:
     parts = message.command
     if len(parts) < 2:
         await message.reply("Usage: `/ban <user_id> [reason]`")
@@ -76,7 +76,7 @@ async def ban_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("unban") & admin_filter)
 @log_errors
-async def unban_handler(client: Client, message: Message) -> None:
+async def unban_handler(app: Client, message: Message) -> None:
     parts = message.command
     if len(parts) < 2:
         await message.reply("Usage: `/unban <user_id>`")
@@ -88,7 +88,7 @@ async def unban_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("addadmin") & admin_filter)
 @log_errors
-async def addadmin_handler(client: Client, message: Message) -> None:
+async def addadmin_handler(app: Client, message: Message) -> None:
     parts = message.command
     if len(parts) < 2:
         await message.reply("Usage: `/addadmin <user_id>`")
@@ -100,7 +100,7 @@ async def addadmin_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("removeadmin") & admin_filter)
 @log_errors
-async def removeadmin_handler(client: Client, message: Message) -> None:
+async def removeadmin_handler(app: Client, message: Message) -> None:
     parts = message.command
     if len(parts) < 2:
         await message.reply("Usage: `/removeadmin <user_id>`")
@@ -112,7 +112,7 @@ async def removeadmin_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("requests") & admin_filter)
 @log_errors
-async def requests_handler(client: Client, message: Message) -> None:
+async def requests_handler(app: Client, message: Message) -> None:
     pending = await RequestRepository.get_pending(10)
     if not pending:
         await message.reply("No pending requests.")
@@ -130,7 +130,7 @@ async def requests_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("reindex") & admin_filter)
 @log_errors
-async def reindex_handler(client: Client, message: Message) -> None:
+async def reindex_handler(app: Client, message: Message) -> None:
     await message.reply(
         "Reindexing is done by forwarding videos to the storage channel(s). "
         "All new uploads are automatically indexed."
@@ -139,7 +139,7 @@ async def reindex_handler(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("logs") & admin_filter)
 @log_errors
-async def logs_handler(client: Client, message: Message) -> None:
+async def logs_handler(app: Client, message: Message) -> None:
     import os
     from pathlib import Path
 
@@ -149,7 +149,7 @@ async def logs_handler(client: Client, message: Message) -> None:
         return
     size = os.path.getsize(log_path)
     if size > 4096:
-        await client.send_document(message.chat.id, str(log_path), caption="Bot logs")
+        await app.send_document(message.chat.id, str(log_path), caption="Bot logs")
     else:
         with open(log_path) as f:
             await message.reply(f"```\n{f.read()[-3800:]}\n```")
@@ -157,7 +157,7 @@ async def logs_handler(client: Client, message: Message) -> None:
 
 # ── Callback dispatcher for admin panel ───────────────────────────────────────
 
-async def admin_callback(client: Client, query: CallbackQuery) -> None:
+async def admin_callback(app: Client, query: CallbackQuery) -> None:
     data = query.data or ""
 
     if data == "admin_stats":
@@ -182,7 +182,7 @@ async def admin_callback(client: Client, query: CallbackQuery) -> None:
         from bot.modules.keyboards import request_buttons
         for r in pending:
             rid = str(r["_id"])
-            await client.send_message(
+            await app.send_message(
                 query.message.chat.id,
                 f"📩 **{r.get('title')}** — `{r.get('user_id')}`",
                 reply_markup=request_buttons(rid),
@@ -199,7 +199,7 @@ async def admin_callback(client: Client, query: CallbackQuery) -> None:
             req = await RequestRepository.get_by_id(rid)
             if req:
                 try:
-                    await client.send_message(
+                    await app.send_message(
                         req["user_id"],
                         f"✅ Your request for **{req.get('title')}** has been fulfilled! "
                         "Search for it now.",
