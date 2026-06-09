@@ -16,15 +16,15 @@ from bot.filters import admin_filter
 from bot.modules import admin_panel
 from bot.utils.decorators import log_errors
 from bot.utils.logger import log
+from bot.former import app
 
-
-@Client.on_message(filters.command("admin") & admin_filter)
+@app.on_message(filters.command("admin") & admin_filter)
 @log_errors
 async def admin_menu(app: Client, message: Message) -> None:
     await message.reply("🛠 **Admin Panel**", reply_markup=admin_panel())
 
 
-@Client.on_message(filters.command("stats") & admin_filter)
+@app.on_message(filters.command("stats") & admin_filter)
 @log_errors
 async def stats_handler(app: Client, message: Message) -> None:
     total_users = await UserRepository.count()
@@ -38,7 +38,7 @@ async def stats_handler(app: Client, message: Message) -> None:
     )
 
 
-@Client.on_message(filters.command("broadcast") & admin_filter)
+@app.on_message(filters.command("broadcast") & admin_filter)
 @log_errors
 async def broadcast_handler(app: Client, message: Message) -> None:
     if not message.reply_to_message:
@@ -61,7 +61,7 @@ async def broadcast_handler(app: Client, message: Message) -> None:
     )
 
 
-@Client.on_message(filters.command("ban") & admin_filter)
+@app.on_message(filters.command("ban") & admin_filter)
 @log_errors
 async def ban_handler(app: Client, message: Message) -> None:
     parts = message.command
@@ -74,7 +74,7 @@ async def ban_handler(app: Client, message: Message) -> None:
     await message.reply(f"Banned user `{uid}`.")
 
 
-@Client.on_message(filters.command("unban") & admin_filter)
+@app.on_message(filters.command("unban") & admin_filter)
 @log_errors
 async def unban_handler(app: Client, message: Message) -> None:
     parts = message.command
@@ -86,7 +86,7 @@ async def unban_handler(app: Client, message: Message) -> None:
     await message.reply(f"Unbanned user `{uid}`." if ok else f"User `{uid}` was not banned.")
 
 
-@Client.on_message(filters.command("addadmin") & admin_filter)
+@app.on_message(filters.command("addadmin") & admin_filter)
 @log_errors
 async def addadmin_handler(app: Client, message: Message) -> None:
     parts = message.command
@@ -98,7 +98,7 @@ async def addadmin_handler(app: Client, message: Message) -> None:
     await message.reply(f"User `{uid}` is now an admin.")
 
 
-@Client.on_message(filters.command("removeadmin") & admin_filter)
+@app.on_message(filters.command("removeadmin") & admin_filter)
 @log_errors
 async def removeadmin_handler(app: Client, message: Message) -> None:
     parts = message.command
@@ -110,7 +110,7 @@ async def removeadmin_handler(app: Client, message: Message) -> None:
     await message.reply(f"Removed admin `{uid}`." if ok else f"User `{uid}` was not an admin.")
 
 
-@Client.on_message(filters.command("requests") & admin_filter)
+@app.on_message(filters.command("requests") & admin_filter)
 @log_errors
 async def requests_handler(app: Client, message: Message) -> None:
     pending = await RequestRepository.get_pending(10)
@@ -128,7 +128,7 @@ async def requests_handler(app: Client, message: Message) -> None:
         )
 
 
-@Client.on_message(filters.command("reindex") & admin_filter)
+@app.on_message(filters.command("reindex") & admin_filter)
 @log_errors
 async def reindex_handler(app: Client, message: Message) -> None:
     await message.reply(
@@ -137,7 +137,7 @@ async def reindex_handler(app: Client, message: Message) -> None:
     )
 
 
-@Client.on_message(filters.command("logs") & admin_filter)
+@app.on_message(filters.command("logs") & admin_filter)
 @log_errors
 async def logs_handler(app: Client, message: Message) -> None:
     import os
