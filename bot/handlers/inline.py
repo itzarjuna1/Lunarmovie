@@ -18,7 +18,7 @@ async def inline_handler(client: Client, query: InlineQuery) -> None:
     if not q:
         await query.answer(
             results=[],
-            switch_pm_text="give a sea4ch query as movie name ",
+            switch_pm_text="give a search query as movie name ",
             switch_pm_parameter="start",
             cache_time=0,
         )
@@ -69,3 +69,4 @@ async def inline_handler(client: Client, query: InlineQuery) -> None:
         )
 
     await query.answer(results=articles, cache_time=10)
+#chache time refreshed 
