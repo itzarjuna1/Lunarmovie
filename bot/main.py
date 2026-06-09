@@ -5,13 +5,12 @@ Run with: python -m bot.main
 import asyncio
 import signal
 
-from pyrogram import Client
-
+from bot.former import app
 from bot.configs import config
 from bot.database import connect, disconnect
 from bot.utils.logger import log
 
-# Importing handlers registers all Pyrogram decorators against the Client class.
+# Register handlers
 import bot.handlers.start      # noqa: F401
 import bot.handlers.search     # noqa: F401
 import bot.handlers.admin      # noqa: F401
@@ -24,14 +23,6 @@ import bot.handlers.request    # noqa: F401
 async def main() -> None:
     log.info("Starting Lunar Movie Client…")
     await connect()
-
-    app = Client(
-        "lunar_movie_bot",
-        api_id=config.API_ID,
-        api_hash=config.API_HASH,
-        bot_token=config.BOT_TOKEN,
-        workdir="sessions",
-    )
 
     stop_event = asyncio.Event()
 
@@ -47,9 +38,11 @@ async def main() -> None:
         await stop_event.wait()
 
     from bot.services import tmdb, archive
+
     await tmdb.close()
     await archive.close()
     await disconnect()
+
     log.info("Lunar Movie Client stopped cleanly.")
 
 
