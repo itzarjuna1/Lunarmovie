@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from bot.main import app
+from bot.former import app
 from bot.configs import config
 from bot.database.repositories.users import UserRepository
 from bot.filters import banned_filter
