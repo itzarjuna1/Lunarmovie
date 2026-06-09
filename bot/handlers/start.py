@@ -29,7 +29,7 @@ Hit a button below to get started 👇
 
 @app.on_message(filters.command("start") & filters.private & ~banned_filter)
 @log_errors
-async def start_handler(client: Client, message: Message) -> None:
+async def start_handler(app: Client, message: Message) -> None:
     user = message.from_user
     await UserRepository.get_or_create(
         user.id,
@@ -45,7 +45,7 @@ async def start_handler(client: Client, message: Message) -> None:
 
 @app.on_message(filters.command("help") & filters.private & ~banned_filter)
 @log_errors
-async def help_handler(client: Client, message: Message) -> None:
+async def help_handler(app: Client, message: Message) -> None:
     help_text = """
 **Lunar Movie Client — Help**
 
