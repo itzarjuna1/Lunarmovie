@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-
+from bot.main import app
 from bot.configs import config
 from bot.database.repositories.users import UserRepository
 from bot.filters import banned_filter
@@ -27,7 +27,7 @@ Hit a button below to get started 👇
 """.strip()
 
 
-@Client.on_message(filters.command("start") & filters.private & ~banned_filter)
+@app.on_message(filters.command("start") & filters.private & ~banned_filter)
 @log_errors
 async def start_handler(client: Client, message: Message) -> None:
     user = message.from_user
@@ -43,7 +43,7 @@ async def start_handler(client: Client, message: Message) -> None:
     )
 
 
-@Client.on_message(filters.command("help") & filters.private & ~banned_filter)
+@app.on_message(filters.command("help") & filters.private & ~banned_filter)
 @log_errors
 async def help_handler(client: Client, message: Message) -> None:
     help_text = """
